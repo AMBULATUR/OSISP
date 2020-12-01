@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Regedit4", "Regedit4.vcxproj", "{70496622-43AB-41CF-81CF-34A63E42DAFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70496622-43AB-41CF-81CF-34A63E42DAFD}.Debug|x64.ActiveCfg = Debug|x64
+		{70496622-43AB-41CF-81CF-34A63E42DAFD}.Debug|x64.Build.0 = Debug|x64
+		{70496622-43AB-41CF-81CF-34A63E42DAFD}.Debug|x86.ActiveCfg = Debug|Win32
+		{70496622-43AB-41CF-81CF-34A63E42DAFD}.Debug|x86.Build.0 = Debug|Win32
+		{70496622-43AB-41CF-81CF-34A63E42DAFD}.Release|x64.ActiveCfg = Release|x64
+		{70496622-43AB-41CF-81CF-34A63E42DAFD}.Release|x64.Build.0 = Release|x64
+		{70496622-43AB-41CF-81CF-34A63E42DAFD}.Release|x86.ActiveCfg = Release|Win32
+		{70496622-43AB-41CF-81CF-34A63E42DAFD}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B41B83AE-F87A-404C-BF4F-48F9DFA39BA2}
+	EndGlobalSection
+EndGlobal

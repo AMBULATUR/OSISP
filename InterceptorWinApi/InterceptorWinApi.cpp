@@ -2,39 +2,9 @@
 #include <windows.h> // Needed to use windows api calls
 #include <Psapi.h>
 #include <fstream>
+#define findWord "Hello"
 
 using namespace std;
-
-// need to be global so our keyboard hook can clean up
-HANDLE hProc = NULL;
-HWND Window = NULL;
-HHOOK hHook = NULL;
-HANDLE hThread = NULL;
-
-int getModuleBase(HANDLE processHandle, const std::wstring& sModuleName)
-{
-    HMODULE* hModules = NULL;
-    wchar_t szBuf[50];
-    DWORD cModules;
-    DWORD dwBase = -1;
-
-    EnumProcessModules(processHandle, hModules, 0, &cModules);
-    hModules = new HMODULE[cModules / sizeof(HMODULE)];
-
-    if (EnumProcessModules(processHandle, hModules, cModules / sizeof(HMODULE), &cModules)) {
-        for (size_t i = 0; i < cModules / sizeof(HMODULE); i++) {
-            if (GetModuleBaseName(processHandle, hModules[i], szBuf, sizeof(szBuf))) {
-                if (sModuleName.compare(szBuf) == 0) {
-                    dwBase = (DWORD)hModules[i];
-                    break;
-                }
-            }
-        }
-    }
-
-    delete[] hModules;
-    return dwBase;
-}
 
 DWORD_PTR GetProcessBaseAddress(DWORD processID)
 {
@@ -73,8 +43,9 @@ DWORD_PTR GetProcessBaseAddress(DWORD processID)
 
 int main()
 {
-    const char* findWord = "Hello";
-    const char* anotherWord= "Ansty"; //New intended health Value
+    HANDLE hProc = NULL;
+    HWND Window = NULL;
+    const char* Word = "FOUND"; //New intended health Value
     DWORD procID;
     Window = FindWindow(NULL, L"ConsoleInterception");
     if (!GetWindowThreadProcessId(Window, &procID))
@@ -84,25 +55,30 @@ int main()
         return 0;
     const int nSize = 6;
     char lpBuffer[nSize]; //allocate mem
-    const auto base = GetProcessBaseAddress(procID);
-    if (base == 0)
-        return 0;
+    const auto PTRbase = GetProcessBaseAddress(procID);
     ofstream myfile;
     myfile.open("example.txt");
     SIZE_T lpNOR = 0;
-    for (DWORD i = 0;; ++i)
+    DWORD _offset = 0;
+    while (true)
     {
-        if (ReadProcessMemory(hProc, (LPVOID)(base + i), lpBuffer, nSize, &lpNOR) == TRUE)
+        LPVOID OffSet = LPVOID(PTRbase + _offset++);
+        if (ReadProcessMemory(hProc, OffSet, lpBuffer, nSize, &lpNOR) == TRUE)
         {
             myfile << lpBuffer;
             if (strcmp(lpBuffer, findWord) == 0)
             {
-                auto vmem = VirtualAllocEx(hProc, (LPVOID)(base + i), nSize + 1, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-                DWORD old_protection = PAGE_EXECUTE_READ;
-                VirtualProtectEx(hProc, (LPVOID)(base + i), nSize, PAGE_EXECUTE_READWRITE, &old_protection);
-                if (WriteProcessMemory(hProc, (LPVOID)(base + i), anotherWord, nSize, &lpNOR))
-                    FlushInstructionCache(hProc, (LPVOID)(base + i), nSize);
-                break;
+                DWORD flProtect = PAGE_EXECUTE_READWRITE;
+                VirtualAllocEx(hProc, OffSet, nSize + 1, MEM_COMMIT | MEM_RESERVE,flProtect); // Выделяем память в другом процессе
+                VirtualProtectEx(hProc, OffSet, nSize, PAGE_EXECUTE_READWRITE, &flProtect); //Change attribute
+                /*
+                    1й параметр - хэндл открытого процесса
+                    2й - (указатель)адрес памяти, для которой необходимо изменить модификатор доступа
+                    3й - размер блока памяти, для которого необходимо изменить модификатор доступа
+                    4й - новый модификатор доступа
+                    5й - (указатель)переменная размером 4 байта, в которую запишется старый модификатор доступа
+                */WriteProcessMemory(hProc, OffSet, Word, nSize, &lpNOR);
+                std::cout << "Success" << endl;
             }
         }
     }

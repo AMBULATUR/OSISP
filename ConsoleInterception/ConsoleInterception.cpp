@@ -8,7 +8,7 @@ int main()
 	SetConsoleTitle(L"ConsoleInterception"); //sets Window Title to Lose Health
 	using namespace std::chrono_literals;
 	const char* firstLine = "Hello";
-	const char* secondLine = "Word interrupt";
+	const char* secondLine = "Word";
 	while (true)
 	{
 		std::cout << firstLine << "\n";
